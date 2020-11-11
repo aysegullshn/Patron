@@ -1,0 +1,33 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title>
+      <span>Ayşegül</span> 
+      <ion-button style="float:right;" color="warning" (click)="personelekle()">Ekle</ion-button>
+    </ion-title>
+    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!--<ion-input class="ion-input-bg-dark" placeholder="Kullanıcı Adı" (ionChange)="textcontrolkadi($event)"></ion-input>
+  <br />
+  <ion-input class="ion-input-bg-dark" placeholder="Kullanıcı Şifre" (ionChange)="textcontrolsifre($event)"></ion-input>
+  <br />
+  <ion-button color="primary" expand="full" (click)="girisyap()">Giriş Yap</ion-button>-->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+  <ion-list>
+    <ion-item *ngFor="let item of veriler">
+      <ion-label style="color:black;padding:8px 6px;display:flex;justify-content: space-between;align-items: center;">
+        <span>{{item.Name}}</span> 
+        <span>{{item.Surname}}</span>
+        <section>
+          <ion-button style="float:right;" color="danger" (click)="personelsil(item.myTableID)">Sil</ion-button>
+          <ion-button style="float:right;" color="success" (click)="personelduzenle(item.myTableID, item.Name)">Düzenle</ion-button>
+        </section>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+

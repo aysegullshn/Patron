@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Tasarım
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-card>
+    <ion-list>
+      <ion-item *ngFor="let item of veriler">
+        <ion-label >
+          <div style="color:black;padding:8px 6px;display:flex;justify-content: space-between;align-items: center;">
+            <span>Adı Soyadı</span>
+            <span style="color:darkcyan">
+              {{item.Name}} {{item.Surname}} {{item.Id}}
+            </span> 
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ion-content>
