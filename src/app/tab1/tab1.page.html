@@ -1,7 +1,7 @@
 <ion-header mode="ios">
   <ion-toolbar>
     <ion-title>
-      <span>Ayşegül</span> 
+      <span>Kişi Listesi</span> 
       <ion-button style="float:right;" color="warning" (click)="personelekle()">Ekle</ion-button>
     </ion-title>
     
@@ -18,13 +18,13 @@
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
   <ion-list>
-    <ion-item *ngFor="let item of veriler">
+    <ion-item *ngFor="let item of personeller">
       <ion-label style="color:black;padding:8px 6px;display:flex;justify-content: space-between;align-items: center;">
-        <span>{{item.Name}}</span> 
-        <span>{{item.Surname}}</span>
+        <span>{{item.name}}</span> 
+        <span>{{item.surname}}</span>
         <section>
-          <ion-button style="float:right;" color="danger" (click)="personelsil(item.myTableID)">Sil</ion-button>
-          <ion-button style="float:right;" color="success" (click)="personelduzenle(item.myTableID, item.Name)">Düzenle</ion-button>
+          <ion-button style="float:right;" color="danger" (click)="personelsil(item.id)">Sil</ion-button>
+          <ion-button style="float:right;" color="success" (click)="personelduzenle(item.id, item.name)">Düzenle</ion-button>
         </section>
       </ion-label>
     </ion-item>

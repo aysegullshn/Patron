@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
-import { async } from 'q';
+import Personel from '../models/Personel';
 
 @Component({
   selector: 'app-tab1',
@@ -9,10 +9,8 @@ import { async } from 'q';
 })
 export class Tab1Page implements OnInit {
   
-  constructor(public loadingController : LoadingController,public alertController: AlertController ) {
-    
-  }
-  veriler : Array<string> = [];
+  constructor(public loadingController : LoadingController,public alertController: AlertController ) {}
+  personeller : Array<Personel> = [];
   kadi : String;
   sifre : String;
   
@@ -24,57 +22,29 @@ export class Tab1Page implements OnInit {
   public textcontrolsifre(event : any) {
     this.sifre = event.detail.value;
   }
-
-  ngAfterViewInit(){
-    
+  async personelGetir(){
+    await fetch('http://localhost:59466/api/Personel')
+    .then(res => res.json())
+    .then(veri => {
+      veri.forEach(element => {
+        let personel = new Personel(element.Name, element.Surname,element.Gender,element.Salary, element.Id);
+        this.personeller.push(personel);
+      });
+    });
+    this.personeller.reverse();
+    console.log(this.personeller);
   }
   async ngOnInit() {
-    await fetch('http://localhost:59466/api/Personel')
-    .then(res => res.json())
-    .then(veri => {
-      veri.forEach(element => {
-        this.veriler.push(element);
-      });
-    });
-    this.veriler.reverse();
+    await this.personelGetir();
   }
   public async doRefresh(e){
-    await fetch('http://localhost:59466/api/Personel')
-    .then(res => res.json())
-    .then(veri => {
-      veri.forEach(element => {
-        this.veriler.push(element);
-      });
-    }).then(a => {
-      e.target.complete();
-    });
-    this.veriler.reverse();
+    await this.personelGetir().then(() => e.target.complete());
   }
-  getVeriler(){
-    let tempVeriler : Array<string> = [];
-    this.veriler.forEach(element => {
-      const name = element['Name'];
-      const surname = element['Surname'];
-      const veri = {
-        "name": name,
-        "surname": surname
-      };
-      
-      tempVeriler.push(name+surname);
-    });
-    return tempVeriler;
-  }
-  public async personelsil(id : Number){
-    await fetch('http://localhost:59466/api/Personel/Delete/'+id)
-    .then(res => {
-      if(res.ok){
-        window.location.reload();
-      }
-      
-    });
+  public async personelsil(id : number){
+    await Personel.sil(id);
   }
 
-  public async personelduzenle(id: Number, _name: String){
+  public async personelduzenle(id: number, _name: String){
     const alert = await this.alertController.create({
       header: 'Düzenle',
       inputs:[
@@ -84,7 +54,7 @@ export class Tab1Page implements OnInit {
           id : 'name',
           value : _name,
           placeholder : 'İsim girin'
-        },//burayıı yapmamız gerekiyor
+        },
         {
           name: 'gender',
           type: 'radio',
@@ -103,12 +73,7 @@ export class Tab1Page implements OnInit {
         }, {
           text: 'Kaydet',
           handler: async (e) => {
-            await fetch('http://localhost:59466/api/Personel/Update/'+id+'/'+e.name)
-            .then(res => {
-              if(res.ok){
-                console.log('yenilendi');
-              }
-            })
+            await Personel.guncelle(id, e.name);
           }
         }
       ]
@@ -134,12 +99,7 @@ export class Tab1Page implements OnInit {
         {
           text : 'Ekle',
           handler : async (a) =>{
-            await fetch('http://localhost:59466/api/Personel/Add/'+a.name+'/'+a.surname)
-            .then(res => {
-              if(res.ok){
-                console.log('eklendi');
-              }
-            })
+           await Personel.ekle(a.name, a.surname);         
           }
         }
       ]
@@ -147,17 +107,10 @@ export class Tab1Page implements OnInit {
     await alert.present();
   }
   public async girisyap(){
-    //fetch("localhost:1000/api/"+this.kadi+"/"+this.sifre);
-    //if(this.kadi == "aysegul" && this.sifre == "123"){
-    //  console.log("dogru giriş yaptın");
-    ///}else{
-    //  console.log("giriş yapamadın");
-    //}
     const loading = await this.loadingController.create({
       message : "Giriş yapılıyor",
       duration : 1000
     });
     await loading.present();
   }
-  
 }
