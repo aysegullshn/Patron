@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
 import Personel from '../models/Personel';
+import { PersonelService } from '../services/personel.service';
 
 @Component({
   selector: 'app-tab1',
@@ -9,7 +10,7 @@ import Personel from '../models/Personel';
 })
 export class Tab1Page implements OnInit {
   
-  constructor(public loadingController : LoadingController,public alertController: AlertController ) {}
+  constructor(public loadingController : LoadingController,public alertController: AlertController, private personelService: PersonelService ) {}
   personeller : Array<Personel> = [];
   kadi : String;
   sifre : String;
@@ -23,16 +24,14 @@ export class Tab1Page implements OnInit {
     this.sifre = event.detail.value;
   }
   async personelGetir(){
-    await fetch('http://localhost:59466/api/Personel')
-    .then(res => res.json())
-    .then(veri => {
-      veri.forEach(element => {
+    this.personelService.personelGetir().subscribe((item) => {
+      item.map(element => {
         let personel = new Personel(element.Name, element.Surname,element.Gender,element.Salary, element.Id);
         this.personeller.push(personel);
-      });
+      })
+      
+      this.personeller.reverse();
     });
-    this.personeller.reverse();
-    console.log(this.personeller);
   }
   async ngOnInit() {
     await this.personelGetir();
@@ -41,7 +40,9 @@ export class Tab1Page implements OnInit {
     await this.personelGetir().then(() => e.target.complete());
   }
   public async personelsil(id : number){
-    await Personel.sil(id);
+    await this.personelService.personelSil(id).subscribe(()=>{
+      this.personeller = this.personeller.filter((item) => item.id !== id);
+    });
   }
 
   public async personelduzenle(id: number, _name: String){
@@ -73,7 +74,13 @@ export class Tab1Page implements OnInit {
         }, {
           text: 'Kaydet',
           handler: async (e) => {
-            await Personel.guncelle(id, e.name);
+            await this.personelService.personelGuncelle(id, e.name).subscribe(()=>{
+              this.personeller.map((item) => {
+                if(item.id == id){
+                  item.name = e.name;
+                }
+              })
+            });
           }
         }
       ]
@@ -99,7 +106,14 @@ export class Tab1Page implements OnInit {
         {
           text : 'Ekle',
           handler : async (a) =>{
-           await Personel.ekle(a.name, a.surname);         
+            let data = {
+              name: a.name,
+              surname: a.surname
+            }
+           await this.personelService.personelEkle(data).subscribe((item) => {
+              let personel = new Personel(a.name, a.surname, null, null, item);
+              this.personeller.unshift(personel);
+           });         
           }
         }
       ]
